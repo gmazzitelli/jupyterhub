@@ -1,0 +1,5 @@
+bck/
+*.sif
+.env
+cookies/
+db/
