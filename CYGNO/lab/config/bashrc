@@ -1,0 +1,60 @@
+#!/bin/bash
+# .bashrc
+
+# User specific aliases and functions
+
+alias rm='rm -i'
+alias cp='cp -i'
+alias mv='mv -i'
+
+# Source global definitions
+if [ -f /etc/bashrc ]; then
+    . /etc/bashrc
+fi
+
+# Variables
+IMAGE_VERSION=`echo $JUPYTER_IMAGE_SPEC | cut -d: -f2 | cut -d- -f1`
+PYRELEASE=`python -V | cut -d " " -f2`
+#
+# Prompt
+PS1="CYGNO:$IMAGE_VERSION# "
+
+# Geant4
+# source /usr/local/share/geant4/bin/geant4.sh
+
+# CADmesh library
+# export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib
+
+# USERDIR="/jupyter-workspace/cloud-storage/$USERNAME"
+
+export OIDC_AGENT=$CVMFS_PARENT_DIR/cvmfs/datacloud.infn.it/sw/oidc-agent/ubuntu22.04/latest/bin/oidc-agent
+
+export OIDC_CONFIG_DIR=/jupyter-workspace/private/.oidc-agent
+eval $(oidc-keychain) > /dev/null
+
+DISTRO=`cat /etc/lsb-release | grep DISTRIB_DESCRIPTION |  awk -F  '=' '{print $2}'`
+
+# export BEARER_TOKEN=`cat /tmp/token`
+
+alias cygno_setup='source /usr/local/share/dodasts/script/cygno_init.sh'
+alias cygno_htc='source $CVMFS_PARENT_DIR/cvmfs/sft-cygno.infn.it/config/cygno_htc'
+
+
+echo "USEFUL NOTICE: ${DISTRO},  image ${IMAGE_VERSION}, ptyhon ${PYRELEASE}"
+echo " - 'cygno_setup' to set CYGNO setup for reco, GENAT ecc"
+echo " - 'cygno_htc' to handle jobs queue"
+echo ""
+source $CVMFS_PARENT_DIR/cvmfs/sft-cygno.infn.it/config/cygno_htc -t
+echo ""
+
+if [ -d /cnaf/"${USERNAME}" ] && [ -f /cnaf/"${USERNAME}/.bashrc" ]; then
+    . /cnaf/"${USERNAME}/.bashrc"
+fi
+
+
+# Source user environment
+USERDIR="/jupyter-workspace/private"
+
+if [ -d "$USERDIR" ] && [ -f "$USERDIR/.bashrc" ]; then
+    . "$USERDIR/.bashrc"
+fi

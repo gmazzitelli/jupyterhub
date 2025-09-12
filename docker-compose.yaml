@@ -1,0 +1,104 @@
+services:
+
+  jupyterhub:
+    depends_on:
+      - http_proxy
+
+    image: harbor.cloud.infn.it/datacloud-templates/snj-base-jhub:1.3.0-1
+    restart: unless-stopped
+    command:
+      - /usr/bin/python3
+      - /usr/local/bin/jupyterhub
+      - --debug
+      - --config=/srv/jupyterhub/jupyterhub_config.py
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /usr/local/share/dodasts/jupyterhub/cookies:/srv/jupyterhub/cookies
+      - /usr/local/share/dodasts/jupyterhub/db:/srv/jupyterhub/db
+      - ${PWD}/jupyterhub_config.py:/srv/jupyterhub/jupyterhub_config.py
+    environment:
+      - OAUTH_ENDPOINT=${OAUTH_ENDPOINT}
+      - OAUTH_CALLBACK_URL=${OAUTH_CALLBACK_URL}
+      - OAUTH_GROUPS=${OAUTH_GROUPS}
+      - OAUTH_SUB=
+      - WITH_GPU=false
+      - ADMIN_OAUTH_GROUPS=${ADMIN_OAUTH_GROUPS}
+      - IAM_CLIENT_ID=${IAM_CLIENT_ID}
+      - IAM_CLIENT_SECRET=${IAM_CLIENT_SECRET}
+      - JUPYTER_IMAGE_LIST=gmazzitelli/cygno-lab:v2.5
+      - JUPYTER_RAM_LIST=4G,8G,12G,16G
+      - JUPYTER_PROXY_TOKEN=${JUPYTER_PROXY_TOKEN}
+      - JUPYTERHUB_API_TOKEN=${JUPYTERHUB_API_TOKEN}
+      - JUPYTERHUB_CRYPT_KEY=${JUPYTERHUB_CRYPT_KEY}
+      - JUPYTER_WITH_CVMFS=True
+      - DEFAULT_SPAWNER=LAB
+      - POST_START_CMD=/usr/local/share/dodasts/script/post_script.sh
+      - JUPYTER_COLLAB_SERVICE=False
+      - DOCKER_NOTEBOOK_MOUNT_DIR=/data
+      - DOCKER_NOTEBOOK_DIR=
+
+  http_proxy:
+    image: jupyterhub/configurable-http-proxy
+    restart: unless-stopped
+    command:
+      - configurable-http-proxy
+      - --ip=0.0.0.0
+      - --port=8888
+      - --api-ip=0.0.0.0
+      - --api-port=8001
+      - --default-target=http://jupyterhub:8088
+      - --error-target=http://jupyterhub:8088/hub/error
+      - --ssl-key=/usr/local/share/dodasts/certs/jupyter/privkey.pem
+      - --ssl-cert=/usr/local/share/dodasts/certs/jupyter/cert.pem
+    volumes:
+       - /etc/letsencrypt/live/notebook00.cygno.cloud.infn.it/privkey.pem:/usr/local/share/dodasts/certs/jupyter/privkey.pem
+       - /etc/letsencrypt/live/notebook00.cygno.cloud.infn.it/cert.pem:/usr/local/share/dodasts/certs/jupyter/cert.pem
+    environment:
+      - CONFIGPROXY_AUTH_TOKEN=${CONFIGPROXY_AUTH_TOKEN}
+    ports:
+      - 443:8888
+      - 8001:8001
+
+  cvmfs:
+    image: gmazzitelli/cvmfs-client:wp1-v0.1
+    container_name: cvmfs-client
+    privileged: true
+    devices:
+      - /dev/fuse
+    cap_add:
+      - SYS_ADMIN
+    volumes:
+      - /data/jupyter-mounts/cvmfs/:/cvmfs:shared
+    environment:
+      - REPO_LIST=sft.cern.ch datacloud.infn.it sft-cygno.infn.it
+    restart: unless-stopped
+    logging:
+      driver: local
+      options:
+        max-size: "100m"
+        max-file: "5"
+
+#  rclone:
+#    image: rclone/rclone
+#    container_name: rclone
+#    cap_add:
+#      - SYS_ADMIN
+#    devices:
+#      - /dev/fuse
+#    security_opt:
+#      - apparmor:unconfined
+#    environment:
+#      - RCLONE_KEY_ID=${RCLONE_KEY_ID}
+#      - RCLONE_KEY=${RCLONE_KEY}
+#      - RCLONE_ENDPOINT=${RCLONE_ENDPOINT}
+#    volumes:
+#      - /data/jupyter-mounts/ba-storage:/mnt:rw,rshared
+#      - ${PWD}/rclone.conf.template:/config/rclone.conf.template
+#      - ${PWD}/rclone_entrypoint.sh:/config/rclone_entrypoint.sh
+#    entrypoint: ["/bin/sh", "/config/rclone_entrypoint.sh"]
+#    command: ["mount", "disk:", "/mnt", "--allow-other", "--allow-non-empty", "--config", "/config/rclone.conf", "--vfs-cache-mode", "full"]
+
+
+networks:
+  default:
+    name: jupyterhub

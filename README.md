@@ -1,0 +1,26 @@
+### notebook CYGNO v2.X
+- based on https://github.com/infn-datacloud/dodas-docker-images/blob/review_jupyter_images/docker/single-node-jupyterhub/jupyterlab/Dockerfile (DISTRIB_ID=Ubuntu
+DISTRIB_RELEASE=22.04 / DISTRIB_CODENAME=jammy DISTRIB_DESCRIPTION="Ubuntu 22.04.5 LTS")
+- mounts CVMFS sft.cern.ch datacloud.infn.it sft-cygno.infn.it
+- mount S3 disk @ Bari
+- chaged/updated jupyter_config.py 
+- include cygno setup for recostraciotion, simulation and anlisys based on CVMF repo
+- include the submittion of jobs both at CNAF or to CLOUD queue
+- include the developping of the jupyter CYGNO image without installed software now all resident over CVMFS sft-cygno.infn.it
+
+example of .env file:
+```
+OAUTH_ENDPOINT=https://iam-cygno.cloud.cnaf.infn.it
+OAUTH_CALLBACK_URL=https://notebook00.cygno.cloud.infn.it/hub/oauth_callback
+OAUTH_GROUPS=users/cygno
+ADMIN_OAUTH_GROUPS=admins/cygno
+IAM_CLIENT_ID=...
+IAM_CLIENT_SECRET=...
+JUPYTER_PROXY_TOKEN=...
+JUPYTERHUB_API_TOKEN=...
+JUPYTERHUB_CRYPT_KEY=...
+CONFIGPROXY_AUTH_TOKEN=...
+RCLONE_KEY_ID=...
+RCLONE_KEY=...
+RCLONE_ENDPOINT=https://swift.recas.ba.infn.it/
+```

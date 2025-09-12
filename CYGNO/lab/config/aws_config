@@ -1,0 +1,2 @@
+[default]
+credential_process = /usr/local/share/dodasts/script/sts.py

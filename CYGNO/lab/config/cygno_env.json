@@ -1,0 +1,10 @@
+{
+  "argv": [
+    "/bin/bash",
+    "-c",
+    "source /usr/local/share/dodasts/script/cygno_init.sh && python -m ipykernel_launcher -f {connection_file}"
+  ],
+  "display_name": "CYGNO Setup",
+  "language": "python",
+  "env": {}
+}

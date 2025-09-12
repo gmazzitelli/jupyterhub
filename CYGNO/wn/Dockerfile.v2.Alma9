@@ -1,0 +1,53 @@
+# Image name: cygno-lab-wn
+# FROM htcondor/execute:8.9.9-el7
+
+FROM htcondor/execute:24.x-el9
+
+USER root
+RUN yum install -y python3.11 python3-pip wget && \
+    yum clean all && \
+    rm -rf /var/cache/yum/*
+
+# Basic O.S. packages
+#RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
+#    DEBIAN_FRONTEND=noninteractive apt-get upgrade -y --no-install-recommends && \
+#    DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+#        build-essential \
+#        curl \
+#        fuse \
+#        git \
+#        graphviz \
+#        jq \
+#        less \
+#        libcairo2-dev \
+#        libczmq-dev \
+#        libffi-dev \
+#        libjpeg-dev \
+#        libpixman-1-dev \
+#        nano \
+#        openssh-client \
+#        pandoc \
+#        rsync \
+#        screen \
+#        snakemake \
+#        software-properties-common \
+#        texlive-base \
+#        texlive-fonts-recommended \
+#        texlive-xetex \
+#        tini \
+#        vim \
+#        wget && \
+#        apt-get clean && rm -rf /var/lib/apt/lists/*
+
+# Install Jupyterlab componentes
+RUN python3 -m pip install --no-cache-dir \
+        h5py \
+        matplotlib \
+        numpy \
+        pandas \
+        tornado 
+
+ENV PATH=/cvmfs/datacloud.infn.it/sw/sts-wire/linux/2.1.5/bin:$PATH
+ENV PATH=/cvmfs/sft-cygno.infn.it/config:$PATH
+ENV PATH=/cvmfs/datacloud.infn.it/sw/oidc-agent/ubuntu22.04/latest/bin:$PATH
+ENV PYTHONPATH=/cvmfs/sft-cygno.infn.it/packages/py/Ubuntu22.04_Py3.11.9

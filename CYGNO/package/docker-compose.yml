@@ -1,0 +1,24 @@
+version: '3.8'
+# crea un docker per istallare i pacchetti python dalla stessa imagine del lab
+# docker attach py_assets
+services:
+  py_assets:
+    image: harbor.cloud.infn.it/datacloud-templates/snj-base-lab:1.3.0-1
+    container_name: py_assets
+    volumes:
+# se si vuol mettere sul disco esterno si apre il cvmfs_server transaction sft-cygno.infn.it
+# poi ci si attaca a questo docker e si istallano i pacchetti scommetando il disoco
+#
+#      - /cvmfs:/cvmfs  # Monta il disco esterno nel container
+      - /cvmfs/sft-cygno.infn.it/packages/:/mnt/
+# e poi si fa il publish
+      - ../assets/:/tmp/
+      - ./startup.sh:/startup.sh
+      - ./etc/cvmfs:/etc/cvmfs
+    environment:
+      - PYTHONPATH=/mnt/py/Ubuntu22.04_Py3.11.9
+    stdin_open: true  # Mantiene l'input aperto per interattività
+    tty: true  # Permette l'uso di un terminale interattivo
+#echo 'source /startup.sh' >> /etc/bash.bashrc
+    entrypoint: ["/bin/bash"]
+    command: ["-c", "source /startup.sh && exec /bin/bash"]
