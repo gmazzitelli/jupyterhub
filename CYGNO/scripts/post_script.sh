@@ -92,4 +92,4 @@ nice -n 19 rclone mount --config ${AWS_SHARED_PATH}/rclone.conf  \
 
 
 # Start crond
-cron
+#cron

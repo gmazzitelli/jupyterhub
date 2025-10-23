@@ -1,0 +1,5 @@
+{
+"issuer": "https://iam-cygno.cloud.cnaf.infn.it/",
+"register": "https://iam-cygno.cloud.cnaf.infn.it/manage/dev/dynreg",
+"legacy_aud_mode": true
+}

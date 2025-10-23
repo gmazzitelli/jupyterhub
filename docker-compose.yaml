@@ -21,12 +21,16 @@ services:
       - --ssl-cert
       - /usr/local/share/dodasts/certs/jupyter/cert.pem
     volumes:
-      - ./privkey.pem:/usr/local/share/dodasts/certs/jupyter/privkey.pem:ro
-      - ./cert.pem:/usr/local/share/dodasts/certs/jupyter/cert.pem:ro
+# sotituire con i certificati reali
+      - /etc/letsencrypt/live/notebook00.cygno.cloud.infn.it/privkey.pem:/usr/local/share/dodasts/certs/jupyter/privkey.pem
+      - /etc/letsencrypt/live/notebook00.cygno.cloud.infn.it/cert.pem:/usr/local/share/dodasts/certs/jupyter/cert.pem
+# nel caso di certificati locali sostituire con 
+#      - ./privkey.pem:/usr/local/share/dodasts/certs/jupyter/privkey.pem:ro
+#      - ./cert.pem:/usr/local/share/dodasts/certs/jupyter/cert.pem:ro
     environment:
       - CONFIGPROXY_AUTH_TOKEN=${CONFIGPROXY_AUTH_TOKEN}
     ports:
-      - 8888:8888
+      - 443:8888
       - 8001:8001
 
   jupyterhub:
@@ -53,7 +57,7 @@ services:
       - ADMIN_OAUTH_GROUPS=${ADMIN_OAUTH_GROUPS}
       - IAM_CLIENT_ID=${IAM_CLIENT_ID}
       - IAM_CLIENT_SECRET=${IAM_CLIENT_SECRET}
-      - JUPYTER_IMAGE_LIST=gmazzitelli/cygno-lab:v2.5
+      - JUPYTER_IMAGE_LIST=gmazzitelli/cygno-lab:v2.6
       - JUPYTER_RAM_LIST=4G,8G,12G,16G
       - JUPYTER_PROXY_TOKEN=${JUPYTER_PROXY_TOKEN}
       - JUPYTERHUB_API_TOKEN=${JUPYTERHUB_API_TOKEN}
@@ -66,10 +70,9 @@ services:
       - DOCKER_NOTEBOOK_DIR=
       - CONFIGPROXY_AUTH_TOKEN=${CONFIGPROXY_AUTH_TOKEN}
       - NO_PROXY=localhost,127.0.0.1,http_proxy,jupyterhub
-      - no_proxy=localhost,127.0.0.1,http_proxy,jupyterhub
 
   cvmfs:
-    image: gmazzitelli/cvmfs-client:wp1-v0.1
+    image: gmazzitelli/cvmfs-client:wp1-v0.2
     container_name: cvmfs-client
     privileged: true
     devices:

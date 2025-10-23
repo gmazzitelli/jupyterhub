@@ -10,7 +10,7 @@ ARG CVMFS_PARENT_DIR=/jupyter-workspace
 
 COPY lab/config/bashrc /home/root/.bashrc
 COPY lab/config/bash_profile /home/root/.bash_profile
-
+COPY lab/config/iam-cygno /etc/oidc-agent/issuer.config.d/iam-cygno
 
 ## reclone CNAF
 ARG AWS_SHARED_PATH=/home/root/.aws
