@@ -57,7 +57,7 @@ services:
       - ADMIN_OAUTH_GROUPS=${ADMIN_OAUTH_GROUPS}
       - IAM_CLIENT_ID=${IAM_CLIENT_ID}
       - IAM_CLIENT_SECRET=${IAM_CLIENT_SECRET}
-      - JUPYTER_IMAGE_LIST=gmazzitelli/cygno-lab:v2.6
+      - JUPYTER_IMAGE_LIST=gmazzitelli/cygno-lab:v2.7
       - JUPYTER_RAM_LIST=4G,8G,12G,16G
       - JUPYTER_PROXY_TOKEN=${JUPYTER_PROXY_TOKEN}
       - JUPYTERHUB_API_TOKEN=${JUPYTERHUB_API_TOKEN}
@@ -82,7 +82,7 @@ services:
     volumes:
       - /data/jupyter-mounts/cvmfs/:/cvmfs:shared
     environment:
-      - REPO_LIST=sft.cern.ch datacloud.infn.it sft-cygno.infn.it
+      - REPO_LIST=sft.cern.ch datacloud.infn.it sft-cygno.infn.it geant4.cern.ch
     restart: unless-stopped
     logging:
       driver: local
