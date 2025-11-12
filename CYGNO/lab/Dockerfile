@@ -32,8 +32,11 @@ RUN apt-get update && apt-get install -y cron \
     libgl1-mesa-dev \
     libmotif-dev \
     xorg-dev \
-    fuse3
-
+    fuse3 \
+    oidc-agent && rm -rf /var/lib/apt/lists/*; \
+    apt-get purge -y --auto-remove; \
+    apt-get autoremove; \
+    apt-get clean;
 
 
 # install rclone CNAF altrimenti va messao 
@@ -96,9 +99,7 @@ WORKDIR /usr/local/share/dodasts/script/
 
 ENV CVMFS_PARENT_DIR=${CVMFS_PARENT_DIR}
 ENV PATH=${CVMFS_PARENT_DIR}/cvmfs/sft-cygno.infn.it/config:$PATH
-ENV PATH=${CVMFS_PARENT_DIR}/cvmfs/datacloud.infn.it/sw/oidc-agent/ubuntu22.04/latest/bin:$PATH
 ENV PYTHONPATH=${CVMFS_PARENT_DIR}/cvmfs/sft-cygno.infn.it/packages/py/Ubuntu22.04_Py3.11.9:/opt/conda/lib/python3.11/site-packages
-ENV OIDC_LIB_PATH="$CVMFS_PARENT_DIR/cvmfs/datacloud.infn.it/sw/oidc-agent/ubuntu22.04/latest/lib"
 ENV LD_LIBRARY_PATH="$OIDC_LIB_PATH"
 
 
@@ -116,13 +117,6 @@ RUN mkdir -p ${JUPYTER_ROOT} \
 # Setting up kernel with CYGNO Setup
 RUN ipython kernel install --name=cygno-setup
 COPY lab/config/cygno_env.json /usr/local/share/jupyter/kernels/cygno-setup/kernel.json
-
-# cean up
-
-RUN rm -rf /var/lib/apt/lists/*; \
-    apt-get purge -y --auto-remove; \
-    apt-get autoremove; \
-    apt-get clean;
 
 WORKDIR ${JUPYTER_ROOT}
 

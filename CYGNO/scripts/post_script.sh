@@ -1,12 +1,14 @@
 #!/usr/bin/env bash
-
+echo "[DBG] statintg init"
 # export CVMFS_PARENT_DIR=/jupyter-workspace
 export PATH=$PATH:$CVMFS_PARENT_DIR/cvmfs/datacloud.infn.it/sw/sts-wire/linux/2.1.5/bin
 # export PATH=$PATH:$CVMFS_PARENT_DIR/cvmfs/datacloud.infn.it/sw/oidc-agent/ubuntu22.04/latest/bin/
 #
+echo "[DBG]  source oidc_agent_init.sh"
 source /usr/local/share/dodasts/script/oidc_agent_init.sh
 #
 #
+echo "[DBG]  source cygno_init.sh"
 source /usr/local/share/dodasts/script/cygno_init.sh &
 #
 
@@ -22,6 +24,7 @@ mkdir -p /cnaf/cygno-analysis
 mkdir -p /cnaf/cygno-sim
 mkdir -p /cnaf/cygno-data
 
+echo "[DBG] disk mount"
 set -e
 
 # Primo mount
@@ -62,6 +65,6 @@ nice -n 19 rclone mount --config ${AWS_SHARED_PATH}/rclone.conf  \
      --daemon-timeout 30s \
      --log-file /var/log/sts-wire/mount_log_"${USERNAME}".txt
 
-
+echo "[DBG] end mount, starting cron"
 # Start crond
-# cron
+cron

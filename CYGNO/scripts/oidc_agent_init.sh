@@ -1,16 +1,13 @@
 #!/usr/bin/env bash
 
+set -Eeuo pipefail
+
+echo "[DBG] starting agent"
 export CVMFS_PARENT_DIR=/jupyter-workspace
-export OIDC_AGENT=$CVMFS_PARENT_DIR/cvmfs/datacloud.infn.it/sw/oidc-agent/ubuntu22.04/latest/bin/oidc-agent
-export PATH=$PATH:$CVMFS_PARENT_DIR/cvmfs/datacloud.infn.it/sw/oidc-agent/ubuntu22.04/latest/bin/
-source $CVMFS_PARENT_DIR/cvmfs/datacloud.infn.it/sw/oidc-agent/ubuntu22.04/setup_oidc_agent_latest.sh
 
 export OIDC_CONFIG_DIR=/jupyter-workspace/private/.oidc-agent
 
-eval $(oidc-agent)
-
-#!/usr/bin/env bash
-set -Eeuo pipefail
+eval $(/usr/bin/oidc-agent)
 
 TOKEN_FILE=/tmp/token
 
@@ -19,7 +16,7 @@ TOKEN_FILE=/tmp/token
 
 while true; do
     echo "[INFO] Generating OIDC account configuration..."
-    oidc-gen dodas --issuer "$IAM_SERVER" \
+    /usr/bin/oidc-gen dodas --issuer "$IAM_SERVER" \
         --client-id "$IAM_CLIENT_ID" \
         --client-secret "$IAM_CLIENT_SECRET" \
         --rt "$REFRESH_TOKEN" \
@@ -34,7 +31,7 @@ while true; do
         }
 
     echo "[INFO] Requesting OIDC token..."
-    if oidc-token dodas > "$TOKEN_FILE" 2>/dev/null; then
+    if /usr/bin/oidc-token dodas > "$TOKEN_FILE" 2>/dev/null; then
         if [ -s "$TOKEN_FILE" ]; then
             echo "[SUCCESS] Token successfully written to $TOKEN_FILE"
             break
@@ -50,7 +47,7 @@ done
 
 while true; do
     # Ottieni tempo alla scadenza del token in secondi
-    EXPIRY=$[`oidc-token dodas -e` - `date +%s`]
+    EXPIRY=$[`/usr/bin/oidc-token dodas -e` - `date +%s`]
     # Se EXPIRY è valido e maggiore di 1800 secondi
     if [ "$EXPIRY" -gt 1800 ]; then
         # Dormi fino a 30 minuti prima della scadenza
@@ -59,5 +56,5 @@ while true; do
     fi
 
     # Scrivi il token aggiornato
-    oidc-token dodas > /tmp/token
+    /usr/bin/oidc-token dodas > /tmp/token
 done &
